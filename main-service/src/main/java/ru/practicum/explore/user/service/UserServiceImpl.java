@@ -31,6 +31,7 @@ import ru.practicum.explore.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,7 +79,7 @@ class UserServiceImpl implements UserService {
         objectValidate.validateUser(userId);
         objectValidate.validateEvent(updateEventRequest.getEventId());
         Event event = eventRepository.findById(updateEventRequest.getEventId()).get();
-        if (event.getInitiator().getId() != userId) {
+        if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ForbiddenRequestException(String.format("No event initiator"));
         }
         if (!event.getEventDate().isAfter(LocalDateTime.now().minusHours(2))) {
@@ -126,7 +127,7 @@ class UserServiceImpl implements UserService {
         objectValidate.validateUser(userId);
         objectValidate.validateEvent(eventId);
         Event event = eventRepository.findById(eventId).get();
-        if (event.getInitiator().getId() != userId) {
+        if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ForbiddenRequestException(String.format("Sorry you no Event initiator"));
         }
         return eventMapper.toEventFullDto(event);
@@ -137,7 +138,7 @@ class UserServiceImpl implements UserService {
         objectValidate.validateUser(userId);
         objectValidate.validateEvent(eventId);
         Event event = eventRepository.findById(eventId).get();
-        if (event.getInitiator().getId() != userId) {
+        if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ForbiddenRequestException(String.format("Sorry you no Event initiator"));
         }
         if (event.getState().equals(Status.PUBLISHED) || event.getState().equals(Status.CANCELED)) {
@@ -152,7 +153,7 @@ class UserServiceImpl implements UserService {
         objectValidate.validateUser(userId);
         objectValidate.validateEvent(eventId);
         Event event = eventRepository.findById(eventId).get();
-        if (event.getInitiator().getId() != userId) {
+        if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ForbiddenRequestException(String.format("Sorry you no Event initiator"));
         }
         Collection<ParticipationRequestDto> listRequest =
@@ -168,13 +169,13 @@ class UserServiceImpl implements UserService {
         objectValidate.validateEvent(eventId);
         objectValidate.validateRequest(reqId);
         Event event = eventRepository.findById(eventId).get();
-        if (event.getInitiator().getId() != userId) {
+        if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ForbiddenRequestException(String.format("Sorry you no Event initiator"));
         }
         ParticipationRequest participationRequest = participationRequestRepository.findById(reqId).get();
         Integer limitParticipant = participationRequestRepository.countByEvent_IdAndStatus(eventId,
                 StatusRequest.CONFIRMED);
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == limitParticipant) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(limitParticipant)) {
             participationRequest.setStatus(StatusRequest.REJECTED);
         }
         participationRequest.setStatus(StatusRequest.CONFIRMED);
@@ -187,7 +188,7 @@ class UserServiceImpl implements UserService {
         objectValidate.validateEvent(eventId);
         objectValidate.validateRequest(reqId);
         Event event = eventRepository.findById(eventId).get();
-        if (event.getInitiator().getId() != userId) {
+        if (!Objects.equals(event.getInitiator().getId(), userId)) {
             return null;
         }
         ParticipationRequest participationRequest = participationRequestRepository.findById(reqId).get();
@@ -209,7 +210,7 @@ class UserServiceImpl implements UserService {
     public ParticipationRequestDto postRequestUser(Long userId, Long eventId) {
         objectValidate.validateUser(userId);
         objectValidate.validateEvent(eventId);
-        if (eventRepository.findById(eventId).get().getInitiator().getId() == userId) {
+        if (Objects.equals(eventRepository.findById(eventId).get().getInitiator().getId(), userId)) {
             throw new ForbiddenRequestException(String.format("Sorry you no Event initiator"));
         }
         if (eventRepository.findById(eventId).get().getState().equals(Status.PUBLISHED)) {
@@ -226,7 +227,7 @@ class UserServiceImpl implements UserService {
             if (!event.getRequestModeration()) {
                 participationRequest.setStatus(StatusRequest.CONFIRMED);
             }
-            if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == limitParticipant) {
+            if (event.getParticipantLimit() != 0 && Objects.equals(event.getParticipantLimit(), limitParticipant)) {
                 participationRequest.setStatus(StatusRequest.REJECTED);
             }
             return requestMapper.toParticipationRequestDto(participationRequestRepository.save(participationRequest));
@@ -239,7 +240,7 @@ class UserServiceImpl implements UserService {
     public ParticipationRequestDto cancelRequestByUser(Long userId, Long requestId) {
         objectValidate.validateUser(userId);
         objectValidate.validateRequest(requestId);
-        if (participationRequestRepository.findById(requestId).get().getRequester().getId() != userId) {
+        if (!Objects.equals(participationRequestRepository.findById(requestId).get().getRequester().getId(), userId)) {
             throw new ForbiddenRequestException(String.format("Sorry you no Event initiator"));
         }
         ParticipationRequest participationRequest = participationRequestRepository.findById(requestId).get();
