@@ -38,9 +38,13 @@ public class StatsServiceImpl implements StatsService {
         if (uris == null) {
             uris = statsRepository.findAllByTime(startTime, endTime).stream().distinct().collect(Collectors.toList());
         }
+        List<Hit> hits;
         for (String uri : uris) {
-
-            List<Hit> hits = statsRepository.findAllByUri(uri.substring(1, uri.length() - 1), startTime, endTime);
+            if (uri.contains("[")) {
+                hits = statsRepository.findAllByUri(uri.substring(1, uri.length() - 1), startTime, endTime);
+            } else {
+                hits = statsRepository.findAllByUri(uri, startTime, endTime);
+            }
             if (hits.size() > 0) {
                 list.add(hitMapper.toViewStats(hits));
             }
