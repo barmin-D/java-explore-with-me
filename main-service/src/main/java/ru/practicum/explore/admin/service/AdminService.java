@@ -42,7 +42,7 @@ public interface AdminService {
 
     void addEventInCompilation(Long compId, Long eventId);
 
-    void UnpinCompilation(Long compId);
+    void unpinCompilation(Long compId);
 
     void pinCompilation(Long compId);
 }

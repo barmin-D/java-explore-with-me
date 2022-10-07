@@ -213,7 +213,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void UnpinCompilation(Long compId) {
+    public void unpinCompilation(Long compId) {
         objectValidate.validateCompilation(compId);
         Compilation compilation = compilationRepository.findById(compId).get();
         compilation.setPinned(false);

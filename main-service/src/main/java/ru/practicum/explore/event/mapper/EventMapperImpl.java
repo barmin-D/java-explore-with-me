@@ -20,8 +20,6 @@ import java.util.List;
 
 @Component
 public class EventMapperImpl implements EventMapper {
-    private final LocalDateTime DATE_TIME_START =
-            LocalDateTime.of(2000, 1, 1, 0, 0, 0);
     private CategoryMapper categoryMapper;
     private UserMapper userMapper;
     private StatClient statClient;
@@ -36,7 +34,8 @@ public class EventMapperImpl implements EventMapper {
     }
 
     public Integer getViews(Long id) {
-        String start = DATE_TIME_START.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String start = LocalDateTime.of(2000, 1, 1, 0, 0, 0)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String end = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         ResponseEntity<Object> response = statClient.getStats(start, end, List.of("/events/" + id), false);
         List<LinkedHashMap> collection = (List<LinkedHashMap>) response.getBody();

@@ -134,9 +134,9 @@ public class AdminController {
     }
 
     @DeleteMapping("/compilations/{compId}/pin")
-    public void UnpinCompilation(@PathVariable Long compId) {
+    public void unpinCompilation(@PathVariable Long compId) {
         log.info("Admin unpin compilation id={}", compId);
-        adminService.UnpinCompilation(compId);
+        adminService.unpinCompilation(compId);
     }
 
     @PatchMapping("/compilations/{compId}/pin")
