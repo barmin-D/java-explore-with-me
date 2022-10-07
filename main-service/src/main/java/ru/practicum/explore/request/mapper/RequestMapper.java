@@ -5,6 +5,4 @@ import ru.practicum.explore.request.model.ParticipationRequest;
 
 public interface RequestMapper {
     ParticipationRequestDto toParticipationRequestDto(ParticipationRequest participationRequest);
-
-    ParticipationRequest toParticipationRequest(ParticipationRequestDto participationRequestDto);
 }

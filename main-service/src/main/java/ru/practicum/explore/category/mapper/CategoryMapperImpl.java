@@ -2,6 +2,7 @@ package ru.practicum.explore.category.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.explore.category.dto.CategoryDto;
+import ru.practicum.explore.category.dto.NewCategoryDto;
 import ru.practicum.explore.category.model.Category;
 
 @Component
@@ -15,10 +16,19 @@ public class CategoryMapperImpl implements CategoryMapper {
     }
 
     @Override
-    public Category toCategory(CategoryDto categoryDto) {
+    public Category toCategory(NewCategoryDto newCategoryDto) {
         return Category.builder()
-                .id(categoryDto.getId())
-                .name(categoryDto.getName())
+                .name(newCategoryDto.getName())
                 .build();
+    }
+
+    @Override
+    public void updateCategoryFromCategoryDto(CategoryDto categoryDto, Category category) {
+        if (categoryDto.getId() != null) {
+            category.setId(category.getId());
+        }
+        if (categoryDto.getName() != null) {
+            category.setName(categoryDto.getName());
+        }
     }
 }

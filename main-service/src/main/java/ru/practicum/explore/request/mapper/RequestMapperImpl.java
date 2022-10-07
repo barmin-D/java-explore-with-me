@@ -4,27 +4,18 @@ import org.springframework.stereotype.Component;
 import ru.practicum.explore.request.dto.ParticipationRequestDto;
 import ru.practicum.explore.request.model.ParticipationRequest;
 
+import java.time.format.DateTimeFormatter;
+
 @Component
 public class RequestMapperImpl implements RequestMapper {
     @Override
     public ParticipationRequestDto toParticipationRequestDto(ParticipationRequest participationRequest) {
         return ParticipationRequestDto.builder()
                 .id(participationRequest.getId())
-                .created(participationRequest.getCreated())
-                .event(participationRequest.getEvent())
-                .requestor(participationRequest.getRequestor())
-                .status(participationRequest.getStatus())
-                .build();
-    }
-
-    @Override
-    public ParticipationRequest toParticipationRequest(ParticipationRequestDto participationRequestDto) {
-        return ParticipationRequest.builder()
-                .id(participationRequestDto.getId())
-                .created(participationRequestDto.getCreated())
-                .event(participationRequestDto.getEvent())
-                .requestor(participationRequestDto.getRequestor())
-                .status(participationRequestDto.getStatus())
+                .created(participationRequest.getCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .event(participationRequest.getEvent().getId())
+                .requester(participationRequest.getRequester().getId())
+                .status(participationRequest.getStatus().toString())
                 .build();
     }
 }

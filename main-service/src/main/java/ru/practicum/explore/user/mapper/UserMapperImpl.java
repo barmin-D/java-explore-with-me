@@ -1,6 +1,7 @@
 package ru.practicum.explore.user.mapper;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.explore.user.dto.NewUserRequest;
 import ru.practicum.explore.user.dto.UserDto;
 import ru.practicum.explore.user.dto.UserDto.UserDtoBuilder;
 import ru.practicum.explore.user.dto.UserShortDto;
@@ -21,15 +22,14 @@ public class UserMapperImpl implements UserMapper {
     }
 
     @Override
-    public User toUser(UserDto userDto) {
-        if (userDto == null) {
+    public User toUser(NewUserRequest newUserRequest) {
+        if (newUserRequest == null) {
             return null;
         }
-        User user = new User();
-        user.setId(userDto.getId());
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        return user;
+        return User.builder()
+                .email(newUserRequest.getEmail())
+                .name(newUserRequest.getName())
+                .build();
     }
 
     @Override

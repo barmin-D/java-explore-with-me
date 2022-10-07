@@ -27,16 +27,23 @@ public class Event {
     @JoinColumn(name = "category_id")
     private Category category;
     private String description;
-    private Integer confirmedRequests;
+    @Column(name = "create_on")
+    private LocalDateTime createdOn;
+    @Column(name = "event_date")
     private LocalDateTime eventDate;
-    @OneToOne
+    @ManyToOne
     private Location location;
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "initiator_id")
     private User initiator;
     private Boolean paid;
+    @Column(name = "participant_limit")
     private Integer participantLimit;
+    @Column(name = "published_on")
+    private LocalDateTime publishedOn;
+    @Column(name = "request_moderation")
     private Boolean requestModeration;
     private String title;
-    private Status status;
+    @Enumerated(EnumType.STRING)
+    private Status state;
 }
