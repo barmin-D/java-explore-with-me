@@ -9,7 +9,7 @@
 4. Изменения пользователя/события/категории/подборки событий/заявки на события
 5. Получение пользователя/события/категории/подборки событий/заявки на события
 
-Ссылка на  Pull requests : https://github.com/tortiss0000/java-explore-with-me/pull/1
+Ссылка на  Pull requests : https://github.com/tortiss0000/java-explore-with-me/pull/2
 # Пояснение:
 ## Схема Базы данных
 код для схемы для сайта https://dbdiagram.io
