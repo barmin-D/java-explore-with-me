@@ -9,6 +9,9 @@ import ru.practicum.explore.service.StatsService;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Контроллер статистики
+ */
 @RestController
 public class StatsController {
     private StatsService statsService;
@@ -18,11 +21,17 @@ public class StatsController {
         this.statsService = statsService;
     }
 
+    /*
+    Метод контроллера по сохранению статистики
+    */
     @PostMapping("/hit")
     public EndpointHit save(@RequestBody EndpointHit endpointHit) {
         return statsService.save(endpointHit);
     }
 
+    /*
+    Метод контроллера по получению статистики
+    */
     @GetMapping("/stats")
     public Collection<ViewStats> getStats(@RequestParam String start,
                                           @RequestParam String end,
