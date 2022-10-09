@@ -15,10 +15,12 @@ public interface CommentMapper {
     Метод маппера из модели в dto комментария
     */
     CommentDto toCommentDto(Comment comment);
+
     /*
     Метод маппера из dto комментария в модель
     */
     Comment toComment(CommentDto commentDto, User user, Event event);
+
     /*
     Метод маппера обновление комментария
     */

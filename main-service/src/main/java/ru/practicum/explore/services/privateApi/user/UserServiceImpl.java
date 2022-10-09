@@ -290,7 +290,7 @@ class UserServiceImpl implements UserService {
     public CommentDto updateComment(Long userId, Long eventId, UpdateComment updateComment) {
         objectValidate.validateUser(userId);
         objectValidate.validateEvent(eventId);
-        if(updateComment.getId()==null){
+        if (updateComment.getId() == null) {
             throw new ForbiddenRequestException("Sorry comment null id");
         }
         if (!commentRepository.findById(updateComment.getId()).isPresent()) {
@@ -305,8 +305,8 @@ class UserServiceImpl implements UserService {
         if (!Objects.equals(commentRepository.findById(updateComment.getId()).get().getAuthor().getId(), userId)) {
             throw new ForbiddenRequestException("Sorry you no author comment");
         }
-        Comment comment=commentRepository.findById(updateComment.getId()).get();
-        commentMapper.updateCommentFromUpdateComment(updateComment,comment);
+        Comment comment = commentRepository.findById(updateComment.getId()).get();
+        commentMapper.updateCommentFromUpdateComment(updateComment, comment);
         return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 }
