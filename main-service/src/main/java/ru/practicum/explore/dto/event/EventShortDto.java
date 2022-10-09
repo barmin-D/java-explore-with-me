@@ -5,7 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.explore.dto.category.CategoryDto;
+import ru.practicum.explore.dto.comment.CommentDto;
 import ru.practicum.explore.dto.user.UserShortDto;
+
+import java.util.List;
 
 /**
  * Dto получение краткой информации о событие
@@ -24,4 +27,5 @@ public class EventShortDto {
     private Boolean paid;
     private String title;
     private Integer views;
+    private List<CommentDto> comments;
 }

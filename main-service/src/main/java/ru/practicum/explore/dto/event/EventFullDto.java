@@ -5,9 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.explore.dto.category.CategoryDto;
+import ru.practicum.explore.dto.comment.CommentDto;
 import ru.practicum.explore.dto.user.UserShortDto;
 import ru.practicum.explore.models.location.Location;
 import ru.practicum.explore.statuses.event.Status;
+
+import java.util.List;
 
 /**
  * Dto для получения полной информации о событие
@@ -33,4 +36,5 @@ public class EventFullDto {
     private Status state;
     private String title;
     private Integer views;
+    private List<CommentDto> comments;
 }
