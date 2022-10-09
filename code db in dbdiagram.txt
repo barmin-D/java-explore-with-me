@@ -1,0 +1,56 @@
+table users as U{
+  id bigint [pk, increment]
+  name varchar
+  email varchar
+}
+
+table categories as CT{
+  id bigint [pk, increment]
+  name varchar
+}
+
+table compilations as CM{
+  id bigint [pk, increment]
+  pinned boolean
+  tirle varchar
+}
+
+table events as E{
+  id bigint [pk, increment]
+annotation varchar
+category_id long [ref: < CT.id]
+description varchar
+create_on varchar
+event_date datetime
+location_id long [ref: - L.id]
+initiator_id long [ref: > U.id]
+paid boolean
+participant_limit integer
+request_moderation boolean
+published_on datetime
+title varchar
+status varchar
+}
+
+table requests as R{
+  id bigint [pk, increment]
+  created datetime
+  event_id long [ref: > E.id]
+  requestor_id long [ref: > U.id]
+  status varchar
+}
+
+table locations as L{
+id bigint [pk, increment]
+lat float
+lon float
+}
+
+table event_compilation as EC{
+  event_id bigint [ref: > E.id]
+  compilation_id bigint [ref: > CM.id]
+}
+
+
+
+
