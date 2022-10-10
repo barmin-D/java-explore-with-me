@@ -1,5 +1,7 @@
 package ru.practicum.explore.services.privateApi.user;
 
+import ru.practicum.explore.dto.comment.CommentDto;
+import ru.practicum.explore.dto.comment.UpdateComment;
 import ru.practicum.explore.dto.event.EventFullDto;
 import ru.practicum.explore.dto.event.EventShortDto;
 import ru.practicum.explore.dto.event.NewEventDto;
@@ -66,4 +68,19 @@ public interface UserService {
     Отмена своего запроса на участие в событии.
     */
     ParticipationRequestDto cancelRequestByUser(Long userId, Long requestId);
+
+    /*
+    Добавление коментария пользователем
+    */
+    CommentDto createComment(Long userId, Long eventId, CommentDto commentDto);
+
+    /*
+    Удаление коментария пользователем
+    */
+    void deleteComment(Long userId, Long comId);
+
+    /*
+    Обновление коментария пользователем
+    */
+    CommentDto updateComment(Long userId, Long eventId, UpdateComment updateComment);
 }

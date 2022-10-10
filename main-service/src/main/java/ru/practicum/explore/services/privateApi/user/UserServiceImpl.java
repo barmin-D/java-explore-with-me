@@ -4,29 +4,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.explore.models.error.ForbiddenRequestException;
-import ru.practicum.explore.models.error.ObjectNotFoundException;
-import ru.practicum.explore.errors.validate.ObjectValidate;
-import ru.practicum.explore.models.category.Category;
-import ru.practicum.explore.repositories.category.CategoryRepository;
+import ru.practicum.explore.dto.comment.CommentDto;
+import ru.practicum.explore.dto.comment.UpdateComment;
 import ru.practicum.explore.dto.event.EventFullDto;
 import ru.practicum.explore.dto.event.EventShortDto;
 import ru.practicum.explore.dto.event.NewEventDto;
 import ru.practicum.explore.dto.event.UpdateEventRequest;
-import ru.practicum.explore.models.location.Location;
-import ru.practicum.explore.services.privateApi.location.LocationService;
-import ru.practicum.explore.mappers.event.EventMapper;
-import ru.practicum.explore.models.event.Event;
-import ru.practicum.explore.repositories.event.EventRepository;
-import ru.practicum.explore.statuses.event.Status;
 import ru.practicum.explore.dto.request.ParticipationRequestDto;
+import ru.practicum.explore.errors.validate.ObjectValidate;
+import ru.practicum.explore.mappers.comment.CommentMapper;
+import ru.practicum.explore.mappers.event.EventMapper;
 import ru.practicum.explore.mappers.request.RequestMapper;
-import ru.practicum.explore.models.request.ParticipationRequest;
-import ru.practicum.explore.repositories.request.ParticipationRequestRepository;
-import ru.practicum.explore.statuses.request.StatusRequest;
 import ru.practicum.explore.mappers.user.UserMapper;
+import ru.practicum.explore.models.category.Category;
+import ru.practicum.explore.models.comment.Comment;
+import ru.practicum.explore.models.error.ForbiddenRequestException;
+import ru.practicum.explore.models.error.ObjectNotFoundException;
+import ru.practicum.explore.models.event.Event;
+import ru.practicum.explore.models.location.Location;
+import ru.practicum.explore.models.request.ParticipationRequest;
 import ru.practicum.explore.models.user.User;
+import ru.practicum.explore.repositories.category.CategoryRepository;
+import ru.practicum.explore.repositories.comment.CommentRepository;
+import ru.practicum.explore.repositories.event.EventRepository;
+import ru.practicum.explore.repositories.request.ParticipationRequestRepository;
 import ru.practicum.explore.repositories.user.UserRepository;
+import ru.practicum.explore.services.privateApi.location.LocationService;
+import ru.practicum.explore.statuses.event.Status;
+import ru.practicum.explore.statuses.request.StatusRequest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -44,6 +49,8 @@ class UserServiceImpl implements UserService {
     private final LocationService locationService;
     private final ParticipationRequestRepository participationRequestRepository;
     private final CategoryRepository categoryRepository;
+    private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
     private ObjectValidate objectValidate;
 
     @Autowired
@@ -51,7 +58,8 @@ class UserServiceImpl implements UserService {
                            UserRepository userRepository, EventRepository eventRepository,
                            LocationService locationService,
                            ParticipationRequestRepository participationRequestRepository,
-                           CategoryRepository categoryRepository, ObjectValidate objectValidate) {
+                           CategoryRepository categoryRepository, CommentRepository commentRepository,
+                           CommentMapper commentMapper, ObjectValidate objectValidate) {
         this.userMapper = userMapper;
         this.eventMapper = eventMapper;
         this.requestMapper = requestMapper;
@@ -60,6 +68,8 @@ class UserServiceImpl implements UserService {
         this.locationService = locationService;
         this.participationRequestRepository = participationRequestRepository;
         this.categoryRepository = categoryRepository;
+        this.commentRepository = commentRepository;
+        this.commentMapper = commentMapper;
         this.objectValidate = objectValidate;
     }
 
@@ -246,5 +256,57 @@ class UserServiceImpl implements UserService {
         ParticipationRequest participationRequest = participationRequestRepository.findById(requestId).get();
         participationRequest.setStatus(StatusRequest.CANCELED);
         return requestMapper.toParticipationRequestDto(participationRequestRepository.save(participationRequest));
+    }
+
+    @Override
+    public CommentDto createComment(Long userId, Long eventId, CommentDto commentDto) {
+        objectValidate.validateUser(userId);
+        objectValidate.validateEvent(eventId);
+        if (commentDto.getText().length() == 0 || commentDto.getText() == null) {
+            throw new ForbiddenRequestException("Sorry comment null text");
+        }
+        if (!eventRepository.findById(eventId).get().getState().equals(Status.PUBLISHED)) {
+            throw new ForbiddenRequestException(String.format("Sorry you no Event no published"));
+        }
+        User user = userRepository.findById(userId).get();
+        Event event = eventRepository.findById(eventId).get();
+        Comment comment = commentMapper.toComment(commentDto, user, event);
+        return commentMapper.toCommentDto(commentRepository.save(comment));
+    }
+
+    @Override
+    public void deleteComment(Long userId, Long comId) {
+        objectValidate.validateUser(userId);
+        if (!commentRepository.findById(comId).isPresent()) {
+            throw new ObjectNotFoundException(String.format("Comment not found id=%s", comId));
+        }
+        if (!Objects.equals(commentRepository.findById(comId).get().getAuthor().getId(), userId)) {
+            throw new ForbiddenRequestException("Sorry you no author comment");
+        }
+        commentRepository.deleteById(comId);
+    }
+
+    @Override
+    public CommentDto updateComment(Long userId, Long eventId, UpdateComment updateComment) {
+        objectValidate.validateUser(userId);
+        objectValidate.validateEvent(eventId);
+        if (updateComment.getId() == null) {
+            throw new ForbiddenRequestException("Sorry comment null id");
+        }
+        if (!commentRepository.findById(updateComment.getId()).isPresent()) {
+            throw new ObjectNotFoundException(String.format("Comment not found id=%s", updateComment.getId()));
+        }
+        if (updateComment.getText().length() == 0 || updateComment.getText() == null) {
+            throw new ForbiddenRequestException("Sorry comment null text");
+        }
+        if (!eventRepository.findById(eventId).get().getState().equals(Status.PUBLISHED)) {
+            throw new ForbiddenRequestException(String.format("Sorry you no Event no published"));
+        }
+        if (!Objects.equals(commentRepository.findById(updateComment.getId()).get().getAuthor().getId(), userId)) {
+            throw new ForbiddenRequestException("Sorry you no author comment");
+        }
+        Comment comment = commentRepository.findById(updateComment.getId()).get();
+        commentMapper.updateCommentFromUpdateComment(updateComment, comment);
+        return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 }

@@ -1,22 +1,26 @@
 package ru.practicum.explore.mappers.event;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import ru.practicum.explore.clients.stat.StatClient;
 import ru.practicum.explore.dto.event.*;
 import ru.practicum.explore.mappers.category.CategoryMapper;
+import ru.practicum.explore.mappers.comment.CommentMapper;
+import ru.practicum.explore.mappers.user.UserMapper;
 import ru.practicum.explore.models.category.Category;
-import ru.practicum.explore.clients.stat.StatClient;
-import ru.practicum.explore.models.location.Location;
 import ru.practicum.explore.models.event.Event;
+import ru.practicum.explore.models.location.Location;
+import ru.practicum.explore.models.user.User;
+import ru.practicum.explore.repositories.comment.CommentRepository;
 import ru.practicum.explore.repositories.request.ParticipationRequestRepository;
 import ru.practicum.explore.statuses.request.StatusRequest;
-import ru.practicum.explore.mappers.user.UserMapper;
-import ru.practicum.explore.models.user.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class EventMapperImpl implements EventMapper {
@@ -24,13 +28,19 @@ public class EventMapperImpl implements EventMapper {
     private UserMapper userMapper;
     private StatClient statClient;
     private ParticipationRequestRepository participationRequestRepository;
+    private CommentRepository commentRepository;
+    private CommentMapper commentMapper;
 
+    @Autowired
     public EventMapperImpl(CategoryMapper categoryMapper, UserMapper userMapper, StatClient statClient,
-                           ParticipationRequestRepository participationRequestRepository) {
+                           ParticipationRequestRepository participationRequestRepository,
+                           CommentRepository commentRepository, CommentMapper commentMapper) {
         this.categoryMapper = categoryMapper;
         this.userMapper = userMapper;
         this.statClient = statClient;
         this.participationRequestRepository = participationRequestRepository;
+        this.commentRepository = commentRepository;
+        this.commentMapper = commentMapper;
     }
 
     public Integer getViews(Long id) {
@@ -75,6 +85,8 @@ public class EventMapperImpl implements EventMapper {
                 .state(event.getState())
                 .title(event.getTitle())
                 .views(getViews(event.getId()))
+                .comments(commentRepository.findAllByEventOrderByCreated(event).stream()
+                        .map(commentMapper::toCommentDto).collect(Collectors.toList()))
                 .build();
     }
 
@@ -90,6 +102,8 @@ public class EventMapperImpl implements EventMapper {
                 .paid(event.getPaid())
                 .title(event.getTitle())
                 .views(getViews(event.getId()))
+                .comments(commentRepository.findAllByEventOrderByCreated(event).stream()
+                        .map(commentMapper::toCommentDto).collect(Collectors.toList()))
                 .build();
     }
 

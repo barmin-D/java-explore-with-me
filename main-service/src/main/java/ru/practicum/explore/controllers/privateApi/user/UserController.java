@@ -3,6 +3,8 @@ package ru.practicum.explore.controllers.privateApi.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explore.dto.comment.CommentDto;
+import ru.practicum.explore.dto.comment.UpdateComment;
 import ru.practicum.explore.dto.event.EventFullDto;
 import ru.practicum.explore.dto.event.EventShortDto;
 import ru.practicum.explore.dto.event.NewEventDto;
@@ -128,5 +130,37 @@ public class UserController {
     public ParticipationRequestDto cancelRequestByUser(@PathVariable Long userId, @PathVariable Long requestId) {
         log.info("User patch requestId={} by eserId={}", userId, requestId);
         return userService.cancelRequestByUser(userId, requestId);
+    }
+
+    /*
+    Добавление коментария пользователем
+    */
+    @PostMapping("{userId}/events/{eventId}/comment")
+    public CommentDto createComment(@PathVariable Long userId,
+                                    @PathVariable Long eventId,
+                                    @RequestBody CommentDto commentDto) {
+        log.info("add comment by userId={} and eventId{}", userId, eventId);
+        return userService.createComment(userId, eventId, commentDto);
+    }
+
+    /*
+    Удаление коментария пользователем
+    */
+    @DeleteMapping("{userId}/comment/{comId}")
+    public void deleteComment(@PathVariable Long userId,
+                              @PathVariable Long comId) {
+        log.info("delete comment by userId={} and comId{}", userId, comId);
+        userService.deleteComment(userId, comId);
+    }
+
+    /*
+    Обновление коментария пользователем
+    */
+    @PatchMapping("{userId}/events/{eventId}/comment")
+    public CommentDto updateComment(@PathVariable Long userId,
+                                    @PathVariable Long eventId,
+                                    @RequestBody UpdateComment updateComment) {
+        log.info("update comment by userId={} and eventId{}", userId, eventId);
+        return userService.updateComment(userId, eventId, updateComment);
     }
 }
